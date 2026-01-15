@@ -1,5 +1,5 @@
 import axios from 'axios';
-import GHUtil from './GHUtil.js';
+import GHUtil from './GHUtil';
 let ghUtil = new GHUtil();
 
 let GraphHopperRouting = function (args, requestDefaults) {
@@ -35,17 +35,6 @@ let GraphHopperRouting = function (args, requestDefaults) {
         5: "reached via point",
         6: "enter roundabout"
     };
-
-    this.axiosInstance = axios.create({
-        timeout: this.timeout,
-        withCredentials: false,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-
-    delete this.axiosInstance.defaults.headers.common['Authorization'];
-    delete this.axiosInstance.defaults.headers.common['authorization'];
 };
 
 /**
@@ -58,10 +47,11 @@ GraphHopperRouting.prototype.doRequest = function (reqArgs) {
     let url = this.host + this.endpoint + "?key=" + this.key;
     let that = this;
 
-    console.log(1)
-
     return new Promise((resolve, reject) => {
-        that.axiosInstance.post(url, reqArgs)
+        axios.post(url, reqArgs, {
+            timeout: that.timeout,
+            headers: {'Content-Type': 'application/json'}
+        })
             .then(res => {
                 if (res.status !== 200) {
                     reject(ghUtil.extractError(res, url));
@@ -102,10 +92,11 @@ GraphHopperRouting.prototype.doRequest = function (reqArgs) {
 
 GraphHopperRouting.prototype.info = function () {
     let that = this;
-    let url = that.host + "/info?key=" + that.key;
 
     return new Promise((resolve, reject) => {
-        that.axiosInstance.get(url)
+        let url = that.host + "/info?key=" + that.key;
+
+        axios.get(url, {timeout: that.timeout, headers: {'Content-Type': 'application/json'}})
             .then(res => {
                 if (res.status !== 200) {
                     reject(ghUtil.extractError(res, url));
@@ -123,10 +114,11 @@ GraphHopperRouting.prototype.info = function () {
 GraphHopperRouting.prototype.i18n = function (args) {
     let locale = args && args.locale ? args.locale : this.defaults.locale;
     let that = this;
-    let url = that.host + "/i18n/" + locale + "?key=" + that.key;
 
     return new Promise((resolve, reject) => {
-        that.axiosInstance.get(url)
+        let url = that.host + "/i18n/" + locale + "?key=" + that.key;
+
+        axios.get(url, {timeout: that.timeout, headers: {'Content-Type': 'application/json'}})
             .then(res => {
                 if (res.status !== 200) {
                     reject(ghUtil.extractError(res, url));
