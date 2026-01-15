@@ -35,6 +35,17 @@ let GraphHopperRouting = function (args, requestDefaults) {
         5: "reached via point",
         6: "enter roundabout"
     };
+
+    this.axiosInstance = axios.create({
+        timeout: this.timeout,
+        withCredentials: false,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    delete this.axiosInstance.defaults.headers.common['Authorization'];
+    delete this.axiosInstance.defaults.headers.common['authorization'];
 };
 
 /**
@@ -47,11 +58,19 @@ GraphHopperRouting.prototype.doRequest = function (reqArgs) {
     let url = this.host + this.endpoint + "?key=" + this.key;
     let that = this;
 
+    console.log(234234)
+
     return new Promise((resolve, reject) => {
-        axios.post(url, reqArgs, {
-            timeout: that.timeout,
-            withCredentials: false,
-            headers: {'Content-Type': 'application/json', Authorization: null}
+        that.axiosInstance.post(url, reqArgs, {
+            transformRequest: [(data, headers) => {
+                delete headers['Authorization'];
+                delete headers['authorization'];
+                if (headers.common) {
+                    delete headers.common['Authorization'];
+                    delete headers.common['authorization'];
+                }
+                return JSON.stringify(data);
+            }]
         })
             .then(res => {
                 if (res.status !== 200) {
@@ -93,14 +112,19 @@ GraphHopperRouting.prototype.doRequest = function (reqArgs) {
 
 GraphHopperRouting.prototype.info = function () {
     let that = this;
+    let url = that.host + "/info?key=" + that.key;
 
     return new Promise((resolve, reject) => {
-        let url = that.host + "/info?key=" + that.key;
-
-        axios.get(url, {
-            timeout: that.timeout,
-            withCredentials: false,
-            headers: {'Content-Type': 'application/json', Authorization: null}
+        that.axiosInstance.get(url, {
+            transformRequest: [(data, headers) => {
+                delete headers['Authorization'];
+                delete headers['authorization'];
+                if (headers.common) {
+                    delete headers.common['Authorization'];
+                    delete headers.common['authorization'];
+                }
+                return data;
+            }]
         })
             .then(res => {
                 if (res.status !== 200) {
@@ -119,14 +143,19 @@ GraphHopperRouting.prototype.info = function () {
 GraphHopperRouting.prototype.i18n = function (args) {
     let locale = args && args.locale ? args.locale : this.defaults.locale;
     let that = this;
+    let url = that.host + "/i18n/" + locale + "?key=" + that.key;
 
     return new Promise((resolve, reject) => {
-        let url = that.host + "/i18n/" + locale + "?key=" + that.key;
-
-        axios.get(url, {
-            timeout: that.timeout,
-            withCredentials: false,
-            headers: {'Content-Type': 'application/json', Authorization: null}
+        that.axiosInstance.get(url, {
+            transformRequest: [(data, headers) => {
+                delete headers['Authorization'];
+                delete headers['authorization'];
+                if (headers.common) {
+                    delete headers.common['Authorization'];
+                    delete headers.common['authorization'];
+                }
+                return data;
+            }]
         })
             .then(res => {
                 if (res.status !== 200) {
