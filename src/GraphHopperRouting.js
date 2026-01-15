@@ -58,20 +58,10 @@ GraphHopperRouting.prototype.doRequest = function (reqArgs) {
     let url = this.host + this.endpoint + "?key=" + this.key;
     let that = this;
 
-    console.log(234234)
+    console.log(1)
 
     return new Promise((resolve, reject) => {
-        that.axiosInstance.post(url, reqArgs, {
-            transformRequest: [(data, headers) => {
-                delete headers['Authorization'];
-                delete headers['authorization'];
-                if (headers.common) {
-                    delete headers.common['Authorization'];
-                    delete headers.common['authorization'];
-                }
-                return JSON.stringify(data);
-            }]
-        })
+        that.axiosInstance.post(url, reqArgs)
             .then(res => {
                 if (res.status !== 200) {
                     reject(ghUtil.extractError(res, url));
@@ -115,17 +105,7 @@ GraphHopperRouting.prototype.info = function () {
     let url = that.host + "/info?key=" + that.key;
 
     return new Promise((resolve, reject) => {
-        that.axiosInstance.get(url, {
-            transformRequest: [(data, headers) => {
-                delete headers['Authorization'];
-                delete headers['authorization'];
-                if (headers.common) {
-                    delete headers.common['Authorization'];
-                    delete headers.common['authorization'];
-                }
-                return data;
-            }]
-        })
+        that.axiosInstance.get(url)
             .then(res => {
                 if (res.status !== 200) {
                     reject(ghUtil.extractError(res, url));
@@ -146,17 +126,7 @@ GraphHopperRouting.prototype.i18n = function (args) {
     let url = that.host + "/i18n/" + locale + "?key=" + that.key;
 
     return new Promise((resolve, reject) => {
-        that.axiosInstance.get(url, {
-            transformRequest: [(data, headers) => {
-                delete headers['Authorization'];
-                delete headers['authorization'];
-                if (headers.common) {
-                    delete headers.common['Authorization'];
-                    delete headers.common['authorization'];
-                }
-                return data;
-            }]
-        })
+        that.axiosInstance.get(url)
             .then(res => {
                 if (res.status !== 200) {
                     reject(ghUtil.extractError(res, url));
