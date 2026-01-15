@@ -1,5 +1,5 @@
-let request = require('axios');
-var GHUtil = require("./GHUtil");
+import axios from 'axios';
+import GHUtil from './GHUtil.js';
 let ghUtil = new GHUtil();
 
 let GraphHopperRouting = function (args, requestDefaults) {
@@ -48,9 +48,10 @@ GraphHopperRouting.prototype.doRequest = function (reqArgs) {
     let that = this;
 
     return new Promise((resolve, reject) => {
-        request.post(url, reqArgs, {
+        axios.post(url, reqArgs, {
             timeout: that.timeout,
-            headers: {'Content-Type': 'application/json'}
+            withCredentials: false,
+            headers: {'Content-Type': 'application/json', Authorization: null}
         })
             .then(res => {
                 if (res.status !== 200) {
@@ -77,7 +78,7 @@ GraphHopperRouting.prototype.doRequest = function (reqArgs) {
                                 // Add a LngLat to every instruction
                                 let interval = path.instructions[j].interval;
                                 // The second parameter of slice is non inclusive, therefore we have to add +1
-                                path.instructions[j].points = path.points.coordinates.slice([interval[0], interval[1] + 1]);
+                                path.instructions[j].points = path.points.coordinates.slice(interval[0], interval[1] + 1);
                             }
                         }
                     }
@@ -96,7 +97,11 @@ GraphHopperRouting.prototype.info = function () {
     return new Promise((resolve, reject) => {
         let url = that.host + "/info?key=" + that.key;
 
-        request.get(url, {timeout: that.timeout, headers: {'Content-Type': 'application/json'}})
+        axios.get(url, {
+            timeout: that.timeout,
+            withCredentials: false,
+            headers: {'Content-Type': 'application/json', Authorization: null}
+        })
             .then(res => {
                 if (res.status !== 200) {
                     reject(ghUtil.extractError(res, url));
@@ -118,7 +123,11 @@ GraphHopperRouting.prototype.i18n = function (args) {
     return new Promise((resolve, reject) => {
         let url = that.host + "/i18n/" + locale + "?key=" + that.key;
 
-        request.get(url, {timeout: that.timeout, headers: {'Content-Type': 'application/json'}})
+        axios.get(url, {
+            timeout: that.timeout,
+            withCredentials: false,
+            headers: {'Content-Type': 'application/json', Authorization: null}
+        })
             .then(res => {
                 if (res.status !== 200) {
                     reject(ghUtil.extractError(res, url));
@@ -136,4 +145,4 @@ GraphHopperRouting.prototype.getTurnText = function (sign) {
     return this.turn_sign_map[sign];
 };
 
-module.exports = GraphHopperRouting;
+export default GraphHopperRouting;
