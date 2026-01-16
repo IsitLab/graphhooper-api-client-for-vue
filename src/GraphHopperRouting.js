@@ -1,5 +1,5 @@
 import axios from 'axios';
-import GHUtil from './GHUtil.js';
+import GHUtil from './GHUtil';
 let ghUtil = new GHUtil();
 
 let GraphHopperRouting = function (args, requestDefaults) {
@@ -50,8 +50,7 @@ GraphHopperRouting.prototype.doRequest = function (reqArgs) {
     return new Promise((resolve, reject) => {
         axios.post(url, reqArgs, {
             timeout: that.timeout,
-            withCredentials: false,
-            headers: {'Content-Type': 'application/json', Authorization: null}
+            headers: {'Content-Type': 'application/json'}
         })
             .then(res => {
                 if (res.status !== 200) {
@@ -97,11 +96,7 @@ GraphHopperRouting.prototype.info = function () {
     return new Promise((resolve, reject) => {
         let url = that.host + "/info?key=" + that.key;
 
-        axios.get(url, {
-            timeout: that.timeout,
-            withCredentials: false,
-            headers: {'Content-Type': 'application/json', Authorization: null}
-        })
+        axios.get(url, {timeout: that.timeout, headers: {'Content-Type': 'application/json'}})
             .then(res => {
                 if (res.status !== 200) {
                     reject(ghUtil.extractError(res, url));
@@ -123,11 +118,7 @@ GraphHopperRouting.prototype.i18n = function (args) {
     return new Promise((resolve, reject) => {
         let url = that.host + "/i18n/" + locale + "?key=" + that.key;
 
-        axios.get(url, {
-            timeout: that.timeout,
-            withCredentials: false,
-            headers: {'Content-Type': 'application/json', Authorization: null}
-        })
+        axios.get(url, {timeout: that.timeout, headers: {'Content-Type': 'application/json'}})
             .then(res => {
                 if (res.status !== 200) {
                     reject(ghUtil.extractError(res, url));
